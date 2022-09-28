@@ -10,6 +10,7 @@ import (
 
 	"example.com/p-service/models"
 	"example.com/p-service/models/request"
+	"example.com/p-service/models/response"
 	"github.com/stretchr/testify/suite"
 )
 
@@ -20,7 +21,7 @@ func TestSignUpHandlerSuite(t *testing.T) {
 type signUpHandlerSuite struct {
 	suite.Suite
 
-	model request.SignUp
+	requestModel request.SignUp
 
 	request          *http.Request
 	responseRecorder *httptest.ResponseRecorder
@@ -29,11 +30,14 @@ type signUpHandlerSuite struct {
 }
 
 func (s *signUpHandlerSuite) SetupTest() {
-	s.model = request.SignUp{
-		Username: "some_name",
+	email := "master_of_the_universe@example.com"
+	s.requestModel = request.SignUp{
+		Username: "My Name",
+		Password: "123",
+		Email:    &email,
 	}
 
-	data, err := json.Marshal(s.model)
+	data, err := json.Marshal(s.requestModel)
 	s.Require().NoError(err)
 
 	s.request = httptest.NewRequest("POST", "/", bytes.NewReader(data))
@@ -72,9 +76,6 @@ func (s *signUpHandlerSuite) TestSignUpShouldOnlyAcceptPost() {
 }
 
 func (s *signUpHandlerSuite) TestSignUpShouldAcceptPost() {
-	// Arrange
-	s.request.Method = "POST"
-
 	// Act
 	s.serveHTTP()
 
@@ -85,7 +86,23 @@ func (s *signUpHandlerSuite) TestSignUpShouldAcceptPost() {
 	s.Equal(http.StatusOK, s.responseRecorder.Code)
 }
 
-// Halpers --------------------------------------------------------------------
+func (s *signUpHandlerSuite) TestServeHTTPShouldReturnTheCorrectModel() {
+	// Act
+	s.serveHTTP()
+
+	bodyData, err := ioutil.ReadAll(s.responseRecorder.Body)
+	s.Require().NoError(err)
+
+	res := response.SignUp{}
+	err = json.Unmarshal(bodyData, &res)
+	s.Require().NoError(err)
+
+	// Assert
+	s.Equal(http.StatusOK, s.responseRecorder.Code)
+	s.Equal(s.requestModel.Username, res.Username)
+}
+
+// Helpers --------------------------------------------------------------------
 
 func (s *signUpHandlerSuite) serveHTTP() {
 	s.sut.ServeHTTP(s.responseRecorder, s.request)
