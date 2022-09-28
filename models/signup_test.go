@@ -36,7 +36,6 @@ func (s signUpSuite) TestUnmarshalBinaryShouldAcceptAValidJSONString() {
 	}
 
 	data, err := json.Marshal(expectedSignUp)
-	s.FailNow(string(data))
 	s.Require().NoError(err)
 
 	sut := SignUp{}
