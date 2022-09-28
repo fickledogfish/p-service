@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"io"
 	"io/ioutil"
 	"log"
@@ -8,21 +9,26 @@ import (
 
 	"github.com/google/uuid"
 
+	"example.com/p-service/env"
 	"example.com/p-service/models/request"
 	"example.com/p-service/models/response"
 	"example.com/p-service/responses"
 )
 
 const (
-	ADDR = ":5001"
-
 	BODY_MAX_BYTES = 100
 )
 
 func main() {
+	port, err := env.GetKey(env.PORT)
+	if err != nil {
+		log.Fatal(err)
+		return
+	}
+
 	handler := signUpHandler{}
 
-	log.Fatal(http.ListenAndServe(ADDR, handler))
+	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%s", port), handler))
 }
 
 type signUpHandler struct {

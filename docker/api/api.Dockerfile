@@ -21,6 +21,9 @@ FROM api_builder AS api_publisher
 
 ARG SRC_DIR
 ARG RUN_DIR
+ARG EXPOSED_PORT
+
+ENV EXPOSED_PORT $EXPOSED_PORT
 
 RUN groupadd api && useradd -g api api
 
