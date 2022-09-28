@@ -1,0 +1,12 @@
+version: '3.8'
+
+services:
+  signup_api:
+    build:
+      context: .
+      args:
+        ENDPOINT: signup
+        EXPOSED_PORT: 5001
+      dockerfile: docker/api/api.Dockerfile
+    ports:
+      - '5001:5001'
