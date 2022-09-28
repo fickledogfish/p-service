@@ -1,4 +1,4 @@
-package models
+package request
 
 import (
 	"encoding"
@@ -8,7 +8,7 @@ import (
 	"github.com/stretchr/testify/suite"
 )
 
-func Test(t *testing.T) {
+func TestSignUpSuite(t *testing.T) {
 	suite.Run(t, new(signUpSuite))
 }
 

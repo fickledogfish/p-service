@@ -19,5 +19,7 @@ type signUpHandler struct {
 }
 
 func (s signUpHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
-	responses.Forbidden(w, "Forbidden method")
+	if req.Method != http.MethodPost {
+		responses.Forbidden(w, "Forbidden method")
+	}
 }

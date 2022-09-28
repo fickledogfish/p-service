@@ -11,6 +11,10 @@ func Forbidden(w http.ResponseWriter, message string) {
 	writeResponse(w, http.StatusForbidden, models.NewErrorResponse(message))
 }
 
+func Ok(w http.ResponseWriter, body encoding.BinaryMarshaler) {
+	writeResponse(w, http.StatusOK, body)
+}
+
 func writeResponse(
 	w http.ResponseWriter,
 	code int,

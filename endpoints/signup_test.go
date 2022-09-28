@@ -9,17 +9,18 @@ import (
 	"testing"
 
 	"example.com/p-service/models"
+	"example.com/p-service/models/request"
 	"github.com/stretchr/testify/suite"
 )
 
-func Test(t *testing.T) {
+func TestSignUpHandlerSuite(t *testing.T) {
 	suite.Run(t, new(signUpHandlerSuite))
 }
 
 type signUpHandlerSuite struct {
 	suite.Suite
 
-	model models.SignUp
+	model request.SignUp
 
 	request          *http.Request
 	responseRecorder *httptest.ResponseRecorder
@@ -28,7 +29,7 @@ type signUpHandlerSuite struct {
 }
 
 func (s *signUpHandlerSuite) SetupTest() {
-	s.model = models.SignUp{
+	s.model = request.SignUp{
 		Username: "some_name",
 	}
 
@@ -70,8 +71,22 @@ func (s *signUpHandlerSuite) TestSignUpShouldOnlyAcceptPost() {
 	}
 }
 
+func (s *signUpHandlerSuite) TestSignUpShouldAcceptPost() {
+	// Arrange
+	s.request.Method = "POST"
+
+	// Act
+	s.serveHTTP()
+
+	_, err := ioutil.ReadAll(s.responseRecorder.Body)
+	s.Require().NoError(err)
+
+	// Assert
+	s.Equal(http.StatusOK, s.responseRecorder.Code)
+}
+
 // Halpers --------------------------------------------------------------------
 
-func (sut *signUpHandlerSuite) serveHTTP() {
-	sut.sut.ServeHTTP(sut.responseRecorder, sut.request)
+func (s *signUpHandlerSuite) serveHTTP() {
+	s.sut.ServeHTTP(s.responseRecorder, s.request)
 }
