@@ -7,12 +7,18 @@ import (
 	"example.com/p-service/models"
 )
 
+func Ok(w http.ResponseWriter, body encoding.BinaryMarshaler) {
+	writeResponse(w, http.StatusOK, body)
+}
+
 func Forbidden(w http.ResponseWriter, message string) {
 	writeResponse(w, http.StatusForbidden, models.NewErrorResponse(message))
 }
 
-func Ok(w http.ResponseWriter, body encoding.BinaryMarshaler) {
-	writeResponse(w, http.StatusOK, body)
+func InternalServerError(w http.ResponseWriter) {
+	writeResponse(w, http.StatusInternalServerError, models.NewErrorResponse(
+		"Internal server error",
+	))
 }
 
 func writeResponse(

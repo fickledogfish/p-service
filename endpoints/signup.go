@@ -16,7 +16,7 @@ import (
 const (
 	ADDR = ":8080"
 
-	BODY_MAX_BYTES = int64(100)
+	BODY_MAX_BYTES = 100
 )
 
 func main() {
@@ -36,14 +36,14 @@ func (s signUpHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 
 	body, err := ioutil.ReadAll(io.LimitReader(req.Body, BODY_MAX_BYTES))
 	if err != nil {
-		// TODO
+		responses.InternalServerError(w)
 		return
 	}
 
-	reqData := request.SignUp{}
+	var reqData request.SignUp
 	err = reqData.UnmarshalBinary(body)
 	if err != nil {
-		// TODO
+		responses.InternalServerError(w)
 		return
 	}
 

@@ -3,9 +3,11 @@ package main
 import (
 	"bytes"
 	"encoding/json"
+	"io"
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
+	"strings"
 	"testing"
 
 	"example.com/p-service/models"
@@ -100,6 +102,19 @@ func (s *signUpHandlerSuite) TestServeHTTPShouldReturnTheCorrectModel() {
 	// Assert
 	s.Equal(http.StatusOK, s.responseRecorder.Code)
 	s.Equal(s.requestModel.Username, res.Username)
+}
+
+func (s *signUpHandlerSuite) TestServeHTTPShouldReturnInternalErrorOnInvalidJSON() {
+	// Arrange
+	s.request.Body = io.NopCloser(
+		strings.NewReader(strings.Repeat(".", BODY_MAX_BYTES+1)),
+	)
+
+	// Act
+	s.serveHTTP()
+
+	// Assert
+	s.Equal(http.StatusInternalServerError, s.responseRecorder.Code)
 }
 
 // Helpers --------------------------------------------------------------------
