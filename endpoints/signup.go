@@ -10,8 +10,10 @@ import (
 	"github.com/google/uuid"
 
 	"example.com/p-service/env"
+	"example.com/p-service/middlewares"
 	"example.com/p-service/models/request"
 	"example.com/p-service/models/response"
+	psql "example.com/p-service/prepared_sql"
 	"example.com/p-service/responses"
 )
 
@@ -20,13 +22,17 @@ const (
 )
 
 func main() {
+	{
+		fmt.Println("==>", psql.CreateUser)
+	}
+
 	port, err := env.GetKey(env.PORT)
 	if err != nil {
 		log.Fatal(err)
 		return
 	}
 
-	handler := signUpHandler{}
+	handler := middlewares.AllowedMethods([]string{"POST"}, signUpHandler{})
 
 	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%s", port), handler))
 }
@@ -35,11 +41,6 @@ type signUpHandler struct {
 }
 
 func (s signUpHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
-	if req.Method != http.MethodPost {
-		responses.Forbidden(w, "Forbidden method")
-		return
-	}
-
 	body, err := ioutil.ReadAll(io.LimitReader(req.Body, BODY_MAX_BYTES))
 	if err != nil {
 		responses.InternalServerError(w)

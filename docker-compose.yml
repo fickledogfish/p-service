@@ -1,6 +1,25 @@
 version: '3.8'
 
 services:
+  postgres_db:
+    build:
+      context: .
+      dockerfile: docker/postgres_db/postgres_db.Dockerfile
+    env_file:
+      - docker/postgres_db/dev.env
+
+  postgres_admin:
+    build:
+      context: .
+      dockerfile: docker/postgres_admin/postgres_admin.Dockerfile
+    restart: on-failure
+    depends_on:
+      - postgres_db
+    ports:
+      - '4001:80'
+    env_file:
+      - docker/postgres_admin/dev.env
+
   signup_api:
     build:
       context: .
@@ -8,5 +27,7 @@ services:
         ENDPOINT: signup
         EXPOSED_PORT: 5001
       dockerfile: docker/api/api.Dockerfile
+    depends_on:
+      - postgres_db
     ports:
       - '5001:5001'

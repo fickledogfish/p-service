@@ -14,6 +14,7 @@ ARG SRC_DIR
 COPY . $SRC_DIR
 WORKDIR $SRC_DIR
 
+RUN go generate ./...
 RUN go build -o api endpoints/$ENDPOINT.go
 
 # Second step: run the api
