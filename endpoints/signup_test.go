@@ -1,10 +1,14 @@
 package main
 
 import (
+	"bytes"
+	"encoding/json"
+	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 
+	"example.com/p-service/models"
 	"github.com/stretchr/testify/suite"
 )
 
@@ -15,6 +19,8 @@ func Test(t *testing.T) {
 type signUpHandlerSuite struct {
 	suite.Suite
 
+	model models.SignUp
+
 	request          *http.Request
 	responseRecorder *httptest.ResponseRecorder
 
@@ -22,8 +28,14 @@ type signUpHandlerSuite struct {
 }
 
 func (s *signUpHandlerSuite) SetupTest() {
-	s.request = httptest.NewRequest("POST", "/", nil)
+	s.model = models.SignUp{
+		Username: "some_name",
+	}
 
+	data, err := json.Marshal(s.model)
+	s.Require().NoError(err)
+
+	s.request = httptest.NewRequest("POST", "/", bytes.NewReader(data))
 	s.responseRecorder = httptest.NewRecorder()
 
 	s.sut = signUpHandler{}
@@ -32,6 +44,11 @@ func (s *signUpHandlerSuite) SetupTest() {
 // Test cases -----------------------------------------------------------------
 
 func (s *signUpHandlerSuite) TestSignUpShouldOnlyAcceptPost() {
+	expectedError, err := json.Marshal(
+		models.NewErrorResponse("Forbidden method"),
+	)
+	s.Require().NoError(err)
+
 	for _, method := range []string{
 		"GET",
 		"PUT",
@@ -44,8 +61,12 @@ func (s *signUpHandlerSuite) TestSignUpShouldOnlyAcceptPost() {
 		// Act
 		s.serveHTTP()
 
+		body, err := ioutil.ReadAll(s.responseRecorder.Body)
+		s.Require().NoError(err)
+
 		// Assert
-		s.Assert().Equal(http.StatusForbidden, s.responseRecorder.Code)
+		s.Equal(http.StatusForbidden, s.responseRecorder.Code)
+		s.Equal(string(expectedError), string(body))
 	}
 }
 

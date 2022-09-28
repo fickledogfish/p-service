@@ -3,6 +3,8 @@ package main
 import (
 	"log"
 	"net/http"
+
+	"example.com/p-service/responses"
 )
 
 const ADDR = ":8080"
@@ -16,5 +18,6 @@ func main() {
 type signUpHandler struct {
 }
 
-func (s signUpHandler) ServeHTTP(rw http.ResponseWriter, req *http.Request) {
+func (s signUpHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
+	responses.Forbidden(w, "Forbidden method")
 }
