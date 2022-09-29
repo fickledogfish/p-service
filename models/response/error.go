@@ -1,4 +1,4 @@
-package models
+package response
 
 import "encoding/json"
 
@@ -6,7 +6,7 @@ type errorResponse struct {
 	Message string `json:"message,omitempty"`
 }
 
-func NewErrorResponse(message string) errorResponse {
+func NewError(message string) errorResponse {
 	return errorResponse{
 		Message: message,
 	}

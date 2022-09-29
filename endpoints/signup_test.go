@@ -10,7 +10,6 @@ import (
 	"strings"
 	"testing"
 
-	"example.com/p-service/models"
 	"example.com/p-service/models/request"
 	"example.com/p-service/models/response"
 	"github.com/stretchr/testify/suite"
@@ -28,7 +27,7 @@ type signUpHandlerSuite struct {
 	request          *http.Request
 	responseRecorder *httptest.ResponseRecorder
 
-	sut signUpHandler
+	sut http.Handler
 }
 
 func (s *signUpHandlerSuite) SetupTest() {
@@ -45,14 +44,14 @@ func (s *signUpHandlerSuite) SetupTest() {
 	s.request = httptest.NewRequest("POST", "/", bytes.NewReader(data))
 	s.responseRecorder = httptest.NewRecorder()
 
-	s.sut = signUpHandler{}
+	s.sut = signUp{}.handler()
 }
 
 // Test cases -----------------------------------------------------------------
 
 func (s *signUpHandlerSuite) TestSignUpShouldOnlyAcceptPost() {
 	expectedError, err := json.Marshal(
-		models.NewErrorResponse("Forbidden method"),
+		response.NewError("Forbidden method"),
 	)
 	s.Require().NoError(err)
 
@@ -72,6 +71,7 @@ func (s *signUpHandlerSuite) TestSignUpShouldOnlyAcceptPost() {
 		s.Require().NoError(err)
 
 		// Assert
+		s.T().Logf("Testing for method %s", method)
 		s.Equal(http.StatusForbidden, s.responseRecorder.Code)
 		s.Equal(string(expectedError), string(body))
 	}

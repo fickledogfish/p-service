@@ -22,25 +22,25 @@ const (
 )
 
 func main() {
-	{
-		fmt.Println("==>", psql.CreateUser)
-	}
-
 	port, err := env.GetKey(env.PORT)
 	if err != nil {
 		log.Fatal(err)
 		return
 	}
 
-	handler := middlewares.AllowedMethods([]string{"POST"}, signUpHandler{})
+	handler := signUp{}
 
-	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%s", port), handler))
+	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%s", port), handler.handler()))
 }
 
-type signUpHandler struct {
+type signUp struct {
 }
 
-func (s signUpHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
+func (s signUp) handler() http.Handler {
+	return middlewares.AllowedMethods([]string{"POST"}, s)
+}
+
+func (s signUp) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	body, err := ioutil.ReadAll(io.LimitReader(req.Body, BODY_MAX_BYTES))
 	if err != nil {
 		responses.InternalServerError(w)
@@ -53,6 +53,8 @@ func (s signUpHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 		responses.InternalServerError(w)
 		return
 	}
+
+	fmt.Println("==>", psql.CreateUser)
 
 	id := uuid.New()
 
