@@ -22,7 +22,7 @@ const (
 )
 
 func main() {
-	port, err := env.GetKey(env.PORT)
+	port, err := env.Get(env.PORT)
 	if err != nil {
 		log.Fatal(err)
 		return
