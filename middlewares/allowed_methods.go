@@ -4,11 +4,12 @@ import (
 	"net/http"
 
 	"example.com/p-service/responses"
+	"example.com/p-service/utils"
 )
 
-func AllowedMethods(methods []string, next http.Handler) http.Handler {
+func AllowedMethods(allowedMethods []string, next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
-		if req.Method != http.MethodPost {
+		if !utils.Contains(allowedMethods, req.Method) {
 			responses.Forbidden(w, "Forbidden method")
 			return
 		}
