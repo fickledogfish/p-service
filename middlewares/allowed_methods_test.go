@@ -52,7 +52,7 @@ func (s *allowedMethodsSuite) TestAllowedMethodsShouldRejectWith403ForbiddenMeth
 	s.sut().ServeHTTP(s.responseRecorder, s.request)
 
 	// Assert
-	s.Equal(403, s.responseRecorder.Code)
+	s.Equal(http.StatusMethodNotAllowed, s.responseRecorder.Code)
 }
 
 func (s *allowedMethodsSuite) TestAllowedMethodsShouldIgnoreNextHandlerOnFailure() {
@@ -68,7 +68,7 @@ func (s *allowedMethodsSuite) TestAllowedMethodsShouldIgnoreNextHandlerOnFailure
 
 	// Act
 	s.sut().ServeHTTP(s.responseRecorder, s.request)
-	s.Require().Equal(403, s.responseRecorder.Code)
+	s.Require().Equal(http.StatusMethodNotAllowed, s.responseRecorder.Code)
 
 	// Assert
 	s.False(nextHandlerCalled)

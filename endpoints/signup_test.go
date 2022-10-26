@@ -51,7 +51,7 @@ func (s *signUpHandlerSuite) SetupTest() {
 
 func (s *signUpHandlerSuite) TestSignUpShouldOnlyAcceptPost() {
 	expectedError, err := json.Marshal(
-		response.NewError("Forbidden method"),
+		response.NewError("Method not allowed"),
 	)
 	s.Require().NoError(err)
 
@@ -72,7 +72,7 @@ func (s *signUpHandlerSuite) TestSignUpShouldOnlyAcceptPost() {
 
 		// Assert
 		s.T().Logf("Testing for method %s", method)
-		s.Equal(http.StatusForbidden, s.responseRecorder.Code)
+		s.Equal(http.StatusMethodNotAllowed, s.responseRecorder.Code)
 		s.Equal(string(expectedError), string(body))
 	}
 }

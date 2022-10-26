@@ -21,6 +21,12 @@ func InternalServerError(w http.ResponseWriter) {
 	))
 }
 
+func MethodNotAllowed(w http.ResponseWriter) {
+	writeResponse(w, http.StatusMethodNotAllowed, response.NewError(
+		"Method not allowed",
+	))
+}
+
 func writeResponse(
 	w http.ResponseWriter,
 	code int,
