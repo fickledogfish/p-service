@@ -4,15 +4,14 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
-	"log"
 	"net/http"
 
 	"github.com/google/uuid"
 
-	"example.com/p-service/env"
 	"example.com/p-service/middlewares"
 	"example.com/p-service/models/request"
 	"example.com/p-service/models/response"
+	"example.com/p-service/network"
 	psql "example.com/p-service/prepared_sql"
 	"example.com/p-service/responses"
 )
@@ -22,15 +21,7 @@ const (
 )
 
 func main() {
-	port, err := env.Get(env.PORT)
-	if err != nil {
-		log.Fatal(err)
-		return
-	}
-
-	handler := signUp{}
-
-	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%s", port), handler.handler()))
+	network.RunHandler(signUp{})
 }
 
 type signUp struct {
