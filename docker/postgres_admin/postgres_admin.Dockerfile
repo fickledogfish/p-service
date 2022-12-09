@@ -1,4 +1,4 @@
-FROM dpage/pgadmin4:5.7
+FROM dpage/pgadmin4:6.14
 
 USER pgadmin
 
